@@ -1,0 +1,104 @@
+<div class="row">
+    <div class="col-sm-4">
+        <h2>Players</h2>
+
+        <form
+            [formGroup]="playersForm"
+            (ngSubmit)="onSubmit(playersForm.value)"
+        >
+            <div class="form-group">
+                <label for="names">Enter each name on a separate line:</label>
+                <textarea
+                    class="form-control"
+                    id="names"
+                    name="names"
+                    rows="10"
+                    formControlName="names"
+                >
+                </textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="numTeams">Number of Teams:</label>
+                <select
+                    class="form-control"
+                    id="numTeams"
+                    formControlName="numTeams"
+                >
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+
+            <div class="mb-2">
+                <button type="submit" class="btn btn-primary mr-1">
+                    Generate Teams!
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-secondary mr-4"
+                    (click)="onReset()"
+                >
+                    Reset
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-outline-dark"
+                    (click)="loadTestPlayers()"
+                >
+                    Demo
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-sm-8">
+        <h2>The Teams!</h2>
+
+        <div *ngIf="!playersSubmitted" class="alert alert-danger" role="alert">
+            Enter players!
+        </div>
+
+        <div class="custom-control custom-switch">
+            <input
+                #showCaptain
+                ngModel
+                type="checkbox"
+                class="custom-control-input"
+                id="showCaptain"
+            />
+            <label class="custom-control-label" for="showCaptain"
+                >Show Team Captain</label
+            >
+        </div>
+
+        <div class="card-deck">
+            <div
+                *ngFor="let team of randomTeams.teams; let i = index"
+                [attr.data-index]="i"
+            >
+                <div class="card m-2">
+                    <div class="card-header text-white bg-info">
+                        Team {{ i + 1 }}
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li
+                            *ngFor="let member of team.members"
+                            [ngClass]="{
+                                'list-group-item-warning':
+                                    member.isCaptain && showCaptain.checked
+                            }"
+                            class="list-group-item"
+                        >
+                            {{ member.name }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

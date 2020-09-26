@@ -1,0 +1,86 @@
+version: 2.1
+jobs:
+    build:
+        working_directory: ~/team-generator
+        docker:
+            - image: circleci/node:10.13-browsers
+        steps:
+            - checkout
+            - run:
+                  name: Show current branch
+                  command: echo ${CIRCLE_BRANCH}
+            # Restore local dependencies from cache
+            - restore_cache:
+                  keys:
+                      - v1-dependencies-{{ checksum "package.json" }}
+                      - v1-dependencies-
+            - run:
+                  name: Install Chrome
+                  command: |
+                      curl -L -o google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+                      sudo dpkg -i google-chrome.deb
+                      sudo sed -i 's|HERE/chrome\"|HERE/chrome\" --disable-setuid-sandbox|g' /opt/google/chrome/google-chrome
+                      rm google-chrome.deb
+            - run:
+                  name: Install local project dependencies
+                  command: npm install
+            # Cache local dependencies if they don't exist
+            - save_cache:
+                  key: v1-dependencies-{{ checksum "package.json" }}
+                  paths:
+                      - node_modules
+            - run:
+                  name: Linting
+                  command: npm run lint
+            - run:
+                  name: Testing
+                  command: npm run test
+            - run:
+                  name: E2E Testing
+                  command: npm run e2e
+            - run:
+                  name: Building
+                  command: |
+                      if [ "${CIRCLE_BRANCH}" == "staging" ]; then
+                          npm run build-qa
+                      elif [ "${CIRCLE_BRANCH}" == "deploy" ]; then
+                          npm run build-prod
+                      else
+                          npm run build
+                      fi
+            # Cache the dist folder for the deploy job
+            - save_cache:
+                  key: v1-dist-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_SHA1 }}
+                  paths:
+                      - dist
+    deploy:
+        working_directory: ~/team-generator
+        docker:
+            - image: circleci/python:3.7-stretch
+        steps:
+            - run:
+                  name: Show current branch
+                  command: echo ${CIRCLE_BRANCH}
+            # Restore cache from the build job which contains the dist folder that needs to be deployed
+            - restore_cache:
+                  key: v1-dist-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_SHA1 }}
+            - run:
+                  name: Install aws cli
+                  command: sudo pip install awscli
+            - run:
+                  name: Deploy to S3
+                  command: |
+                      if [ "${CIRCLE_BRANCH}" == "release" ]; then
+                          aws s3 sync dist/random-team-generator s3://random-teams/ --delete --cache-control max-age=31536000,public
+                      fi
+workflows:
+    build_and_deploy:
+        jobs:
+            - build
+            - deploy:
+                  requires:
+                      - build
+                  filters:
+                      branches:
+                          only:
+                              - release
