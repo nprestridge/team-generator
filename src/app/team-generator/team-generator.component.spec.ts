@@ -70,6 +70,7 @@ describe('TeamGeneratorComponent', () => {
         const dropdown = compiled.querySelector('select');
         const selectedValue = dropdown.options[dropdown.selectedIndex].value;
         expect(selectedValue).toEqual('2');
+        expect(dropdown.options.length).toEqual(10);
     });
 
     describe('onReset', () => {
