@@ -13,6 +13,7 @@ export class TeamGeneratorComponent implements OnInit {
     public playersForm: FormGroup;
     public randomTeams: Teams;
     public playersSubmitted = true;
+    public maxTeams = new Array(10);
     private defaultNumTeams = 2;
 
     constructor(
