@@ -2,6 +2,8 @@
 
 The Random Team Generator accepts a list of names and randomly splits the list into teams. It also can select a team leader for each team.
 
+[StackBlitz Demo](https://stackblitz.com/github/nprestridge/team-generator)
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.1.1.
 
 ## Development server
