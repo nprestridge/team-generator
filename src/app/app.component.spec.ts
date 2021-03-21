@@ -3,6 +3,7 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AppComponent } from './app.component';
 import { TeamGeneratorComponent } from './team-generator/team-generator.component';
 
@@ -16,6 +17,7 @@ describe('AppComponent', () => {
                     FormsModule,
                     HttpClientModule,
                     ReactiveFormsModule,
+                    FontAwesomeModule,
                 ],
                 declarations: [AppComponent, TeamGeneratorComponent],
             }).compileComponents();
