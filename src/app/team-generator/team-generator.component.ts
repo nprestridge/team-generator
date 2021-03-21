@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { TeamGeneratorService } from './team-generator.service';
 import { Teams } from '../model/teams';
 import { Players } from '../model/players';
@@ -10,6 +11,7 @@ import { Players } from '../model/players';
     styleUrls: ['./team-generator.component.css'],
 })
 export class TeamGeneratorComponent implements OnInit {
+    public faCopy = faCopy;
     public playersForm: FormGroup;
     public randomTeams: Teams;
     public playersSubmitted = true;
@@ -85,5 +87,19 @@ export class TeamGeneratorComponent implements OnInit {
                 numTeams: this.defaultNumTeams,
             });
         });
+    }
+
+    /**
+     * Copy teams list for pasting
+     */
+    copyTeamsToClipboard() {
+      const teamsElement = document.querySelector('.js-teams');
+      const rangeToSelect = document.createRange();
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      rangeToSelect.selectNodeContents(teamsElement);
+      selection.addRange(rangeToSelect);
+      document.execCommand('copy');
+      selection.removeAllRanges();
     }
 }

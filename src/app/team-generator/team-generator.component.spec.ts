@@ -7,6 +7,7 @@ import {
     waitForAsync,
 } from '@angular/core/testing';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Observable, of } from 'rxjs';
 import { TeamGeneratorComponent } from './team-generator.component';
 import { TeamGeneratorService } from './team-generator.service';
@@ -31,6 +32,26 @@ class MockTeamGeneratorService {
 }
 
 describe('TeamGeneratorComponent', () => {
+    const pascal = 'Pascal';
+    const gullivar = 'Gullivar';
+    const gullivarr = 'Gullivarr';
+    const blathers = 'Blathers';
+
+    const mockPlayers: Players = new Players();
+    mockPlayers.setNames([pascal, gullivar, gullivarr, blathers]);
+
+    const mockTeam1: Players = new Players();
+    mockTeam1.setNames([pascal, gullivarr]);
+    mockTeam1.members[1].isCaptain = true;
+
+    const mockTeam2: Players = new Players();
+    mockTeam2.setNames([blathers, gullivar]);
+    mockTeam2.members[0].isCaptain = true;
+
+    const mockTeams: Teams = {
+        teams: [mockTeam1, mockTeam2],
+    };
+
     let component: TeamGeneratorComponent;
     let teamGeneratorService: TeamGeneratorService;
     let fixture: ComponentFixture<TeamGeneratorComponent>;
@@ -38,7 +59,7 @@ describe('TeamGeneratorComponent', () => {
     beforeEach(
         waitForAsync(() => {
             TestBed.configureTestingModule({
-                imports: [ReactiveFormsModule, HttpClientModule, FormsModule],
+                imports: [ReactiveFormsModule, HttpClientModule, FormsModule, FontAwesomeModule],
                 declarations: [TeamGeneratorComponent],
                 providers: [
                     {
@@ -109,26 +130,6 @@ describe('TeamGeneratorComponent', () => {
         const ERROR_MESSAGE = 'Enter players!';
 
         it('should generate teams', fakeAsync(() => {
-            const pascal = 'Pascal';
-            const gullivar = 'Gullivar';
-            const gullivarr = 'Gullivarr';
-            const blathers = 'Blathers';
-
-            const mockPlayers: Players = new Players();
-            mockPlayers.setNames([pascal, gullivar, gullivarr, blathers]);
-
-            const mockTeam1: Players = new Players();
-            mockTeam1.setNames([pascal, gullivarr]);
-            mockTeam1.members[1].isCaptain = true;
-
-            const mockTeam2: Players = new Players();
-            mockTeam2.setNames([blathers, gullivar]);
-            mockTeam2.members[0].isCaptain = true;
-
-            const mockTeams: Teams = {
-                teams: [mockTeam1, mockTeam2],
-            };
-
             const spy = spyOn(
                 teamGeneratorService,
                 'generateTeams'
@@ -244,6 +245,38 @@ describe('TeamGeneratorComponent', () => {
             expect(
                 component.playersForm.value.names.replace(/\s+/g, '')
             ).toEqual('abc');
+        }));
+    });
+
+    describe('copyTeamsToClipboard', () => {
+        it('should not show copy button when no teams', () => {
+            fixture.detectChanges();
+            const compiled: HTMLElement = fixture.debugElement.nativeElement;
+            const copyButton = compiled.querySelector('.js-copy-button');
+            expect(copyButton).toBeNull();
+        });
+
+        it('should copy teams to clipboard', fakeAsync(() => {
+            fixture.detectChanges();
+            spyOn(document, 'execCommand');
+            spyOn(
+                teamGeneratorService,
+                'generateTeams'
+            ).and.returnValue(mockTeams);
+
+            component.onSubmit({
+                names: `${pascal} \r\n ${gullivar} \r\n ${gullivarr} \r\n ${blathers}`,
+                numTeams: '2',
+            });
+            fixture.detectChanges();
+
+            const compiled: HTMLElement = fixture.debugElement.nativeElement;
+            const copyButton: HTMLElement = compiled.querySelector('.js-copy-button');
+            expect(copyButton).not.toBeNull();
+
+            copyButton.click();
+            fixture.detectChanges();
+            expect(document.execCommand).toHaveBeenCalledWith('copy');
         }));
     });
 });

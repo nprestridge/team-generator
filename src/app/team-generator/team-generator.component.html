@@ -77,20 +77,20 @@
             >
         </div>
 
-        <div class="card-deck">
+        <div class="card-deck js-teams team">
             <div
                 *ngFor="let team of randomTeams.teams; let i = index"
                 [attr.data-index]="i"
             >
                 <div class="card m-2">
-                    <div class="card-header text-white bg-info">
+                    <div class="card-header text-white bg-info" contenteditable="true">
                         Team {{ i + 1 }}
                     </div>
                     <ul class="list-group list-group-flush">
                         <li
                             *ngFor="let member of team.members"
                             [ngClass]="{
-                                'list-group-item-warning':
+                                'list-group-item-warning team__captain--bold':
                                     member.isCaptain && showCaptain.checked
                             }"
                             class="list-group-item"
@@ -101,5 +101,14 @@
                 </div>
             </div>
         </div>
+
+        <button
+            *ngIf="randomTeams.teams.length > 0"
+            type="button"
+            class="btn btn-info js-copy-button"
+            (click)="copyTeamsToClipboard()"
+        >
+            <fa-icon [icon]="faCopy"></fa-icon> Copy
+        </button>
     </div>
 </div>
