@@ -3,7 +3,7 @@ jobs:
     build:
         working_directory: ~/team-generator
         docker:
-            - image: circleci/node:10.13-browsers
+            - image: cimg/node:14.17.0-browsers
         steps:
             - checkout
             - run:
