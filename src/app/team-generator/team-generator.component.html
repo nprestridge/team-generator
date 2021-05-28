@@ -83,7 +83,10 @@
                 [attr.data-index]="i"
             >
                 <div class="card m-2">
-                    <div class="card-header text-white bg-info" contenteditable="true">
+                    <div
+                        class="card-header text-white bg-info"
+                        contenteditable="true"
+                    >
                         Team {{ i + 1 }}
                     </div>
                     <ul class="list-group list-group-flush">
@@ -96,6 +99,10 @@
                             class="list-group-item"
                         >
                             {{ member.name }}
+                            <span
+                                *ngIf="member.isCaptain && showCaptain.checked"
+                                >*</span
+                            >
                         </li>
                     </ul>
                 </div>

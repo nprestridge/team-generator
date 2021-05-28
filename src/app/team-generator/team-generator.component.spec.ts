@@ -59,7 +59,12 @@ describe('TeamGeneratorComponent', () => {
     beforeEach(
         waitForAsync(() => {
             TestBed.configureTestingModule({
-                imports: [ReactiveFormsModule, HttpClientModule, FormsModule, FontAwesomeModule],
+                imports: [
+                    ReactiveFormsModule,
+                    HttpClientModule,
+                    FormsModule,
+                    FontAwesomeModule,
+                ],
                 declarations: [TeamGeneratorComponent],
                 providers: [
                     {
@@ -179,8 +184,12 @@ describe('TeamGeneratorComponent', () => {
                 'li.list-group-item-warning'
             );
             expect(captains.length).toEqual(2);
-            expect(captains[0].textContent.trim()).toEqual(gullivarr);
-            expect(captains[1].textContent.trim()).toEqual(blathers);
+            expect(captains[0].textContent.trim()).toEqual(
+                gullivarr.concat(' *')
+            );
+            expect(captains[1].textContent.trim()).toEqual(
+                blathers.concat(' *')
+            );
         }));
 
         it('should display error with formdata is null', () => {
@@ -259,10 +268,9 @@ describe('TeamGeneratorComponent', () => {
         it('should copy teams to clipboard', fakeAsync(() => {
             fixture.detectChanges();
             spyOn(document, 'execCommand');
-            spyOn(
-                teamGeneratorService,
-                'generateTeams'
-            ).and.returnValue(mockTeams);
+            spyOn(teamGeneratorService, 'generateTeams').and.returnValue(
+                mockTeams
+            );
 
             component.onSubmit({
                 names: `${pascal} \r\n ${gullivar} \r\n ${gullivarr} \r\n ${blathers}`,
@@ -271,7 +279,9 @@ describe('TeamGeneratorComponent', () => {
             fixture.detectChanges();
 
             const compiled: HTMLElement = fixture.debugElement.nativeElement;
-            const copyButton: HTMLElement = compiled.querySelector('.js-copy-button');
+            const copyButton: HTMLElement = compiled.querySelector(
+                '.js-copy-button'
+            );
             expect(copyButton).not.toBeNull();
 
             copyButton.click();
